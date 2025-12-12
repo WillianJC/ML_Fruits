@@ -1,8 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import * as tf from "@tensorflow/tfjs";
+import { VideoCameraIcon, PhotoIcon, ArrowPathIcon, CheckCircleIcon } from "@heroicons/react/24/solid";
 import "./App.css";
 
 const FRUIT_CLASSES = ["Manzana", "Plátano", "Naranja"];
+const FRUIT_PRICES: { [key: string]: string } = {
+  "Manzana": "$3.50",
+  "Plátano": "$1.50",
+  "Naranja": "$4.30"
+};
 const IMAGE_SIZE = 128;
 
 interface Prediction {
@@ -176,8 +182,8 @@ function App() {
 
   return (
     <div className="app-container">
-      <h1>🍎 Clasificador de Frutas</h1>
-      <p className="subtitle">Identifica Manzanas, Plátanos y Naranjas</p>
+      <h1>Clasificador de Frutas</h1>
+      <p className="subtitle">Identifica Manzanas, Plátanos y Naranjas con Inteligencia Artificial</p>
 
       {isModelLoading && (
         <div className="loading">
@@ -189,7 +195,10 @@ function App() {
         <>
           {/* Sección de Webcam */}
           <div className="section">
-            <h2>📹 Captura con Webcam</h2>
+            <h2 className="section-title">
+              <VideoCameraIcon className="icon" />
+              Captura con Webcam
+            </h2>
             <div className="webcam-container">
               <video
                 ref={videoRef}
@@ -206,10 +215,12 @@ function App() {
             <div className="buttons">
               {!webcamActive ? (
                 <button onClick={startWebcam} className="btn-primary">
+                  <VideoCameraIcon className="btn-icon" />
                   Activar Webcam
                 </button>
               ) : (
                 <button onClick={stopWebcam} className="btn-danger">
+                  <ArrowPathIcon className="btn-icon" />
                   Detener Webcam
                 </button>
               )}
@@ -218,7 +229,10 @@ function App() {
 
           {/* Sección de carga manual */}
           <div className="section">
-            <h2>📁 Subir Imagen Manualmente</h2>
+            <h2 className="section-title">
+              <PhotoIcon className="icon" />
+              Subir Imagen Manualmente
+            </h2>
             <input
               type="file"
               ref={fileInputRef}
@@ -230,6 +244,7 @@ function App() {
               onClick={() => fileInputRef.current?.click()}
               className="btn-secondary"
             >
+              <PhotoIcon className="btn-icon" />
               Seleccionar Imagen
             </button>
 
@@ -241,11 +256,15 @@ function App() {
           </div>
 
           {/* Resultado de la predicción */}
-          {prediction && (
-            <div className="prediction-result">
-              <h2>🎯 Resultado</h2>
+          <div className="section prediction-result">
+            <h2 className="section-title">
+              <CheckCircleIcon className="icon" />
+              Resultado de Predicción
+            </h2>
+            {prediction ? (
               <div className="result-card">
                 <p className="fruit-name">{prediction.fruit}</p>
+                <p className="fruit-price">{FRUIT_PRICES[prediction.fruit]}</p>
                 <p className="confidence">
                   Confianza: {prediction.confidence.toFixed(2)}%
                 </p>
@@ -256,8 +275,13 @@ function App() {
                   />
                 </div>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="result-card waiting">
+                <p className="waiting-text">En espera de clasificación...</p>
+                <p className="waiting-subtext">Captura o carga una imagen para comenzar</p>
+              </div>
+            )}
+          </div>
         </>
       )}
     </div>
